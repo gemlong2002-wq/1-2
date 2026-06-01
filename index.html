@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FOS Ledger // Aegis Core V8.5</title>
+  <title>FOS Ledger // Aegis Core V8.6</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -15,7 +15,7 @@
       --bg-base: #f0f4f8;
       --glass-border: rgba(255, 255, 255, 0.8);
       --glass-highlight: rgba(255, 255, 255, 0.95);
-      --accent-glow: rgba(56, 189, 248, 0.15); /* Sky blue glow */
+      --accent-glow: rgba(56, 189, 248, 0.15);
     }
     body {
       background-color: var(--bg-base);
@@ -27,19 +27,19 @@
       min-height: 100vh;
     }
 
-    /* 背景極光球體動畫 (強化版) */
+    /* 背景極光球體動畫 */
     .aurora-orb {
       position: fixed;
       border-radius: 50%;
       filter: blur(90px);
       z-index: -1;
       animation: floatOrb 20s ease-in-out infinite alternate;
-      opacity: 0.65; /* 提高能見度 */
+      opacity: 0.65;
       mix-blend-mode: multiply;
     }
-    .orb-1 { top: -15%; left: -5%; width: 45vw; height: 45vw; background: #bae6fd; } /* 更亮的藍 */
-    .orb-2 { bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: #e8dbfa; animation-delay: -7s; } /* 淡紫 */
-    .orb-3 { top: 30%; left: 40%; width: 35vw; height: 35vw; background: #fdf4ff; animation-delay: -14s; } /* 淡粉 */
+    .orb-1 { top: -15%; left: -5%; width: 45vw; height: 45vw; background: #bae6fd; }
+    .orb-2 { bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: #e8dbfa; animation-delay: -7s; }
+    .orb-3 { top: 30%; left: 40%; width: 35vw; height: 35vw; background: #fdf4ff; animation-delay: -14s; }
 
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1) rotate(0deg); }
@@ -47,7 +47,7 @@
       100% { transform: translate(-4%, -6%) scale(0.92) rotate(-5deg); }
     }
 
-    /* Aegis 主機殼 (微調玻璃係數) */
+    /* Aegis 主機殼 */
     .aegis-panel {
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(28px);
@@ -60,7 +60,7 @@
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    /* ⚡ 強化懸浮回饋 (Enhanced Hover) ⚡ */
+    /* 懸浮回饋強化 */
     .hover-lift {
       transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
     }
@@ -82,7 +82,6 @@
 
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     
-    /* 輸入框內部質感強化 */
     .input-neumorphic {
       background: rgba(248, 250, 252, 0.8);
       box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.03);
@@ -116,7 +115,6 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect } = React;
 
-    // 🛑 核心環境綁定：這是你的 GAS 後端 API 節點
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyOA5zlzlwyKVNPFG5EQmoFqileorfxJ2XZ6ETrW4xzK18AXE40KW3VavqqhFaxolbD/exec';
 
     const formatSafeDate = (rawDate) => {
@@ -158,9 +156,6 @@
         item: '', amount: '', payer: 'brother', type: 'shared', note: ''
       });
 
-      // ==========================================
-      // [Fetch API] 
-      // ==========================================
       const fetchInitialData = async () => {
         setIsLoading(true);
         try {
@@ -228,13 +223,9 @@
 
       const triggerAlert = (title, enTitle, desc, enDesc) => { setAlertData({ title, enTitle, desc, enDesc }); };
 
-      // ==========================================
-      // [POST API] 處理寫入、編輯與刪除
-      // ==========================================
       const executeSave = async (recordToSave, isEdit = false) => {
         const safeRecord = { ...recordToSave, date: formatSafeDate(recordToSave.date) };
         
-        // 樂觀 UI 更新
         if (isEdit) {
           setRecords(prev => {
             const arr = prev.map(r => r.id === safeRecord.id ? safeRecord : r);
@@ -283,7 +274,6 @@
         }
       };
 
-      // 資料運算邏輯
       const liveStats = useMemo(() => {
         if (isFiltering) { return { ...globalStats, isPartial: false }; }
         let bPaid = 0, sPaid = 0, sDebt = 0, bDebt = 0, cycleCount = 0;
@@ -368,7 +358,7 @@
             <div className="absolute inset-4 border-4 border-slate-200 rounded-full border-b-transparent animate-[spin_2s_linear_infinite_reverse]"></div>
           </div>
           <div className="mt-10 text-xs tracking-[0.4em] text-slate-800 font-bold bg-white/80 px-6 py-2.5 rounded-full border border-slate-200 shadow-sm backdrop-blur-sm">
-            INITIALIZING AEGIS V8.5
+            INITIALIZING AEGIS V8.6
           </div>
         </div>
       );
@@ -376,12 +366,11 @@
       return (
         <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8 relative z-10">
           
-          {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4">
             <div className="pt-4">
               <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 flex items-center gap-4">
                 林林家的記帳本
-                <span className="text-xs px-3 py-1 bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-500 rounded-full font-mono shadow-sm tracking-wider">V8.5 Dual-Node</span>
+                <span className="text-xs px-3 py-1 bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-500 rounded-full font-mono shadow-sm tracking-wider">V8.6 Hover-Tech</span>
               </h1>
               <p className="text-[13px] font-semibold text-slate-400 mt-4 tracking-[0.2em] uppercase flex items-center gap-2">
                 FOS LEDGER // AEGIS CORE ARCHITECTURE
@@ -399,13 +388,12 @@
 
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
             
-            {/* 左側：控制台 */}
             <div className="xl:col-span-5 space-y-6">
               
-              {/* 狀態大螢幕 */}
-              <div className="aegis-panel p-8 md:p-10 hover-lift">
+              {/* 儀表板：加入 group 與內部文字 scale 動畫 */}
+              <div className="aegis-panel p-8 md:p-10 hover-lift group">
                 <div className="flex justify-between items-start mb-10">
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-800 flex flex-col gap-1">
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-800 flex flex-col gap-1 transition-transform duration-300 origin-left group-hover:scale-105">
                     {isFiltering ? '檢索區間結算' : '當前週期結算'}
                     <span className="text-[10px] font-mono text-slate-400 tracking-[0.15em] uppercase">{isFiltering ? 'Filtered Matrix' : 'Live Sync Matrix'}</span>
                   </h2>
@@ -420,32 +408,32 @@
                   </div>
                 )}
 
-                <div className="flex flex-col items-center justify-center py-12 bg-white/90 backdrop-blur-md rounded-[2rem] border border-slate-100 shadow-[0_10px_40px_rgb(15,23,42,0.04)] relative overflow-hidden transition-transform duration-500 hover:scale-[1.01]">
+                <div className="flex flex-col items-center justify-center py-12 bg-white/90 backdrop-blur-md rounded-[2rem] border border-slate-100 shadow-[0_10px_40px_rgb(15,23,42,0.04)] relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
                   {liveStats.balance > 0 ? (
                     <div className="text-center w-full px-4">
                       <div className="text-xs font-bold text-slate-400 mb-4 tracking-[0.25em]">妹妹 ➔ 哥哥</div>
-                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono">$ {liveStats.balance.toLocaleString()}</div>
+                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono transition-transform duration-300 group-hover:scale-110">$ {liveStats.balance.toLocaleString()}</div>
                     </div>
                   ) : liveStats.balance < 0 ? (
                     <div className="text-center w-full px-4">
                       <div className="text-xs font-bold text-slate-400 mb-4 tracking-[0.25em]">哥哥 ➔ 妹妹</div>
-                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono">$ {Math.abs(liveStats.balance).toLocaleString()}</div>
+                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono transition-transform duration-300 group-hover:scale-110">$ {Math.abs(liveStats.balance).toLocaleString()}</div>
                     </div>
                   ) : (
                     <div className="text-center w-full px-4 py-6">
-                      <div className="text-3xl font-bold text-emerald-400 tracking-[0.25em]">系統結清</div>
+                      <div className="text-3xl font-bold text-emerald-400 tracking-[0.25em] transition-transform duration-300 group-hover:scale-110">系統結清</div>
                       <div className="text-xs font-mono text-slate-400 mt-3">CLEARED</div>
                     </div>
                   )}
                 </div>
 
                 <div className="mt-8 grid grid-cols-2 gap-5">
-                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-transform duration-300 group-hover:scale-[1.03]">
                     <div className="text-[11px] font-bold text-slate-400 mb-3 tracking-widest">公費均攤 SHARED</div>
                     <div className="text-xl md:text-2xl font-bold text-slate-700 font-mono">$ {liveStats.sharedPerPerson.toLocaleString()}</div>
                   </div>
-                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md flex flex-col justify-center">
+                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-transform duration-300 group-hover:scale-[1.03] flex flex-col justify-center">
                     <div className="text-[11px] font-bold text-slate-400 mb-3 tracking-widest">墊付 DEBT</div>
                     <div className="text-sm font-semibold text-slate-600 flex justify-between font-mono"><span>妹:</span> <span>${liveStats.sDebt.toLocaleString()}</span></div>
                     <div className="text-sm font-semibold text-slate-600 flex justify-between mt-2 font-mono"><span>哥:</span> <span>${liveStats.bDebt.toLocaleString()}</span></div>
@@ -453,10 +441,9 @@
                 </div>
               </div>
 
-              {/* 輸入面板 */}
-              <form onSubmit={handleSubmit} className="aegis-panel p-8 md:p-10 space-y-8 relative overflow-hidden hover-lift">
+              <form onSubmit={handleSubmit} className="aegis-panel p-8 md:p-10 space-y-8 relative overflow-hidden hover-lift group">
                 <div className="flex justify-between items-center pb-2">
-                  <h2 className="text-xl font-bold text-slate-800">寫入核心 <span className="text-[10px] font-mono text-slate-400 ml-2 uppercase tracking-widest">Input Engine</span></h2>
+                  <h2 className="text-xl font-bold text-slate-800 transition-transform duration-300 origin-left group-hover:scale-105">寫入核心 <span className="text-[10px] font-mono text-slate-400 ml-2 uppercase tracking-widest">Input Engine</span></h2>
                 </div>
 
                 <div className="space-y-4">
@@ -514,12 +501,12 @@
               </form>
             </div>
 
-            {/* 右側：資料庫列表 */}
             <div className="xl:col-span-7 space-y-6">
               
-              <div className="aegis-panel p-6 md:p-8 flex justify-between items-center hover-lift">
-                <h2 className="text-xl font-bold text-slate-800">儲存矩陣 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline">Database Archive</span></h2>
-                <div className="text-[11px] font-mono text-slate-500 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+              {/* Archive Title: 加入 group 與 text scale */}
+              <div className="aegis-panel p-6 md:p-8 flex justify-between items-center hover-lift group">
+                <h2 className="text-xl font-bold text-slate-800 transition-transform duration-300 origin-left group-hover:scale-105">儲存矩陣 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline">Database Archive</span></h2>
+                <div className="text-[11px] font-mono text-slate-500 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 shadow-sm transition-transform duration-300 origin-right group-hover:scale-105">
                   {isFiltering ? 'FILTER:' : 'VOL:'} <span className="font-bold text-slate-800 ml-1">{records.length}</span> {isFiltering ? '' : `/ ${totalRecords}`}
                 </div>
               </div>
@@ -533,19 +520,19 @@
                   return (
                     <div key={group.id} className="space-y-4">
                       {!isFilteredMode && isCurrentCycle ? (
-                        <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-5 md:p-6 flex justify-between items-center cursor-pointer hover-lift shadow-sm" onClick={() => toggleGroup(group.id)}>
-                           <div className="font-bold text-slate-800 tracking-wider flex items-center gap-3">
+                        <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-5 md:p-6 flex justify-between items-center cursor-pointer hover-lift shadow-sm group" onClick={() => toggleGroup(group.id)}>
+                           <div className="font-bold text-slate-800 tracking-wider flex items-center gap-3 transition-transform duration-300 origin-left group-hover:scale-105">
                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span> LIVE CYCLE
                            </div>
-                           <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-100 transition-colors hover:bg-slate-100">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
+                           <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-100 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-105 origin-right">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
                         </div>
                       ) : !isFilteredMode && !isCurrentCycle ? (
-                        <div className="bg-slate-100/60 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover-lift gap-4 shadow-sm" onClick={() => toggleGroup(group.id)}>
-                           <div className="flex-1">
+                        <div className="bg-slate-100/60 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover-lift gap-4 shadow-sm group" onClick={() => toggleGroup(group.id)}>
+                           <div className="flex-1 transition-transform duration-300 origin-left group-hover:scale-105">
                              <div className="font-bold text-slate-700 flex items-center gap-2 text-sm tracking-widest uppercase"><span className="text-xl">🚩</span> Cycle Milestone</div>
                              <div className="font-mono text-slate-500 text-xs mt-2 bg-white inline-block px-2.5 py-1 rounded-md border border-slate-100 shadow-sm">{group.milestone?.date}</div>
                            </div>
-                           <div className="flex items-center gap-3 w-full sm:w-auto">
+                           <div className="flex items-center gap-3 w-full sm:w-auto transition-transform duration-300 origin-right group-hover:scale-[1.03]">
                              <button onClick={(e) => deleteRecord(group.milestone.id, e)} className="active-press px-4 py-2 bg-white text-rose-500 text-[10px] font-bold rounded-lg border border-rose-100 hover:bg-rose-50 hover:border-rose-200 shadow-sm transition-all tracking-widest uppercase">
                                Erase
                              </button>
@@ -562,22 +549,26 @@
                             group.records.map((r) => (
                               <div key={r.id} className="bg-white/85 backdrop-blur-md border border-slate-100 rounded-[1.25rem] p-5 md:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer group hover-lift" onClick={() => setEditModal({isOpen: true, data: r})}>
                                 <div className="flex items-center gap-4 md:gap-5 w-full">
-                                  <div className="text-3xl md:text-4xl shrink-0 opacity-70 group-hover:opacity-100 transition-all duration-400 group-hover:scale-110 group-hover:rotate-[-5deg] drop-shadow-sm">{r.payer==='brother'?'💰':'☔'}</div>
+                                  {/* Icon Scale */}
+                                  <div className="text-3xl md:text-4xl shrink-0 opacity-70 group-hover:opacity-100 transition-all duration-400 group-hover:scale-125 group-hover:rotate-[-5deg] drop-shadow-sm">{r.payer==='brother'?'💰':'☔'}</div>
                                   <div className="flex-1 min-w-0">
                                     <div className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2.5">
-                                      <span className="truncate">{r.item}</span>
-                                      {r.type==='sister_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm">妹私</span>}
-                                      {r.type==='brother_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm">哥私</span>}
-                                      {r.type==='shared' && <span className="text-[9px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 px-2 py-1 rounded-md uppercase shrink-0 shadow-sm">🤝 公費</span>}
+                                      {/* 品項文字放大 */}
+                                      <span className="truncate inline-block transition-transform duration-300 origin-left group-hover:scale-[1.08] group-hover:text-sky-900">{r.item}</span>
+                                      {r.type==='sister_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm transition-transform duration-300 origin-left group-hover:scale-110">妹私</span>}
+                                      {r.type==='brother_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm transition-transform duration-300 origin-left group-hover:scale-110">哥私</span>}
+                                      {r.type==='shared' && <span className="text-[9px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 px-2 py-1 rounded-md uppercase shrink-0 shadow-sm transition-transform duration-300 origin-left group-hover:scale-110">🤝 公費</span>}
                                     </div>
                                     <div className="text-[11px] md:text-xs text-slate-400 font-mono mt-2 flex items-center gap-3">
-                                      <span className="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{r.date}</span>
-                                      <span className="opacity-0 group-hover:opacity-100 text-sky-500 transition-opacity font-bold tracking-widest bg-sky-50 px-2 py-0.5 rounded-md">EDIT_</span>
+                                      {/* 日期標籤微微放大 */}
+                                      <span className="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100 transition-transform duration-300 origin-left group-hover:scale-[1.05]">{r.date}</span>
+                                      <span className="opacity-0 group-hover:opacity-100 text-sky-500 transition-all duration-300 font-bold tracking-widest bg-sky-50 px-2 py-0.5 rounded-md transform translate-x-[-10px] group-hover:translate-x-0">EDIT_</span>
                                     </div>
                                   </div>
                                 </div>
                                 <div className="mt-4 sm:mt-0 text-right w-full sm:w-auto shrink-0">
-                                  <div className="text-2xl md:text-3xl font-bold text-slate-800 font-mono tracking-tight group-hover:text-sky-600 transition-colors">$ {r.amount.toLocaleString()}</div>
+                                  {/* 金額文字放大 */}
+                                  <div className="text-2xl md:text-3xl font-bold text-slate-800 font-mono tracking-tight transition-all duration-300 origin-right group-hover:scale-[1.15] group-hover:text-sky-600 drop-shadow-sm">$ {r.amount.toLocaleString()}</div>
                                 </div>
                               </div>
                             ))
@@ -594,16 +585,15 @@
                   <button 
                     onClick={fetchMoreRecords} 
                     disabled={isLoadMoreLoading}
-                    className={`active-press bg-white/90 backdrop-blur-sm text-slate-600 text-xs font-bold tracking-[0.15em] border border-slate-200 rounded-full px-8 py-3.5 hover:bg-white hover:shadow-lg transition-all uppercase shadow-sm ${isLoadMoreLoading ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
+                    className={`active-press bg-white/90 backdrop-blur-sm text-slate-600 text-xs font-bold tracking-[0.15em] border border-slate-200 rounded-full px-8 py-3.5 hover:bg-white hover:shadow-lg transition-all uppercase shadow-sm ${isLoadMoreLoading ? 'opacity-50 cursor-not-allowed' : 'hover-lift group'}`}
                   >
-                    {isLoadMoreLoading ? 'Loading Matrix...' : 'Load Deep Archive'}
+                    <span className="inline-block transition-transform duration-300 group-hover:scale-110">{isLoadMoreLoading ? 'Loading Matrix...' : 'Load Deep Archive'}</span>
                   </button>
                 </div>
               )}
             </div>
           </div>
 
-          {/* 右下角：計算機 */}
           {calcOpen && (
             isCalcMinimized ? (
               <button onClick={() => setIsCalcMinimized(false)} className="active-press fixed bottom-8 right-8 z-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl w-16 h-16 shadow-[0_12px_30px_rgb(15,23,42,0.1)] flex items-center justify-center hover-lift text-slate-600 font-mono text-xs font-bold tracking-widest transition-all">
@@ -632,7 +622,6 @@
             )
           )}
 
-          {/* 左下角：空間濾鏡 */}
           {filterPanelOpen && (
             isFilterMinimized ? (
               <button onClick={() => setIsFilterMinimized(false)} className="active-press fixed bottom-8 left-8 z-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl w-16 h-16 shadow-[0_12px_30px_rgb(15,23,42,0.1)] flex items-center justify-center hover-lift text-slate-600 font-mono text-xs font-bold tracking-widest transition-all">
@@ -667,7 +656,6 @@
             )
           )}
 
-          {/* 編輯面板 Modal */}
           {editModal.isOpen && editModal.data && (
             <div className="fixed inset-0 z-[8000] bg-slate-900/30 backdrop-blur-md flex items-center justify-center p-4">
               <form onSubmit={handleEditSubmit} className="bg-white/95 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 max-w-lg w-full shadow-[0_30px_60px_rgb(15,23,42,0.15)] space-y-7 relative border border-slate-100 transform transition-all scale-100">
@@ -699,7 +687,6 @@
             </div>
           )}
 
-          {/* 警告彈窗 */}
           {alertData && (
             <div className="fixed inset-0 z-[9999] bg-slate-900/50 backdrop-blur-md flex items-center justify-center p-4">
               <div className="bg-white/95 backdrop-blur-xl rounded-[2rem] p-10 max-w-sm w-full text-center shadow-[0_30px_60px_rgb(0,0,0,0.2)] border border-slate-100/50 transform transition-all scale-100">
