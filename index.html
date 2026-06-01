@@ -3,74 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FOS Ledger // Aegis Core V8</title>
+  <title>FOS Ledger // Aegis Core V8.5</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-base: #f4f7fb;
-      --glass-border: rgba(255, 255, 255, 0.7);
-      --glass-highlight: rgba(255, 255, 255, 0.9);
+      --bg-base: #f0f4f8;
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --glass-highlight: rgba(255, 255, 255, 0.95);
+      --accent-glow: rgba(56, 189, 248, 0.15); /* Sky blue glow */
     }
     body {
       background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
       font-family: 'Inter', sans-serif;
-      color: #1e293b;
+      color: #0f172a;
       overflow-x: hidden;
       min-height: 100vh;
     }
 
-    /* 背景極光球體動畫 */
+    /* 背景極光球體動畫 (強化版) */
     .aurora-orb {
       position: fixed;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(90px);
       z-index: -1;
-      animation: floatOrb 15s ease-in-out infinite alternate;
-      opacity: 0.5;
+      animation: floatOrb 20s ease-in-out infinite alternate;
+      opacity: 0.65; /* 提高能見度 */
+      mix-blend-mode: multiply;
     }
-    .orb-1 { top: -10%; left: -10%; width: 40vw; height: 40vw; background: #e0f2fe; }
-    .orb-2 { bottom: -10%; right: -5%; width: 50vw; height: 50vw; background: #fdf4ff; animation-delay: -5s; }
-    .orb-3 { top: 40%; left: 50%; width: 30vw; height: 30vw; background: #f1f5f9; animation-delay: -10s; }
+    .orb-1 { top: -15%; left: -5%; width: 45vw; height: 45vw; background: #bae6fd; } /* 更亮的藍 */
+    .orb-2 { bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: #e8dbfa; animation-delay: -7s; } /* 淡紫 */
+    .orb-3 { top: 30%; left: 40%; width: 35vw; height: 35vw; background: #fdf4ff; animation-delay: -14s; } /* 淡粉 */
 
     @keyframes floatOrb {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(5%, 5%) scale(1.05); }
-      100% { transform: translate(-5%, -5%) scale(0.95); }
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      50% { transform: translate(6%, 8%) scale(1.08) rotate(5deg); }
+      100% { transform: translate(-4%, -6%) scale(0.92) rotate(-5deg); }
     }
 
-    /* Aegis 裝甲玻璃面板 */
+    /* Aegis 主機殼 (微調玻璃係數) */
     .aegis-panel {
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
       border: 1px solid var(--glass-border);
       box-shadow: 
-        0 4px 24px -6px rgba(15, 23, 42, 0.05),
+        0 8px 32px -8px rgba(15, 23, 42, 0.06),
         inset 0 1px 1px var(--glass-highlight);
-      border-radius: 24px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 28px;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    .aegis-panel:hover {
+    /* ⚡ 強化懸浮回饋 (Enhanced Hover) ⚡ */
+    .hover-lift {
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-6px) scale(1.01);
       box-shadow: 
-        0 12px 32px -8px rgba(15, 23, 42, 0.08),
-        inset 0 1px 1px var(--glass-highlight);
-      transform: translateY(-2px);
+        0 20px 40px -10px rgba(15, 23, 42, 0.12),
+        0 10px 20px -5px rgba(15, 23, 42, 0.04),
+        0 0 0 1px var(--accent-glow);
+      border-color: rgba(255, 255, 255, 1);
+      z-index: 10;
+    }
+    
+    /* 點擊下壓回饋 */
+    .active-press:active {
+      transform: translateY(2px) scale(0.98) !important;
+      box-shadow: 0 4px 10px -4px rgba(15, 23, 42, 0.1) !important;
     }
 
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     
+    /* 輸入框內部質感強化 */
+    .input-neumorphic {
+      background: rgba(248, 250, 252, 0.8);
+      box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.03);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 0.3s ease;
+    }
+    .input-neumorphic:focus {
+      background: #ffffff;
+      box-shadow: 
+        0 0 0 4px rgba(241, 245, 249, 0.8),
+        inset 0 0 0 1px rgba(148, 163, 184, 0.2);
+      border-color: rgba(203, 213, 225, 1);
+    }
+
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 <body class="antialiased selection:bg-slate-200 selection:text-slate-900 pb-32">
@@ -126,7 +159,7 @@
       });
 
       // ==========================================
-      // [Fetch API] 取代舊版的 google.script.run
+      // [Fetch API] 
       // ==========================================
       const fetchInitialData = async () => {
         setIsLoading(true);
@@ -201,7 +234,7 @@
       const executeSave = async (recordToSave, isEdit = false) => {
         const safeRecord = { ...recordToSave, date: formatSafeDate(recordToSave.date) };
         
-        // 樂觀 UI 更新 (先變更畫面，再背景寫入)
+        // 樂觀 UI 更新
         if (isEdit) {
           setRecords(prev => {
             const arr = prev.map(r => r.id === safeRecord.id ? safeRecord : r);
@@ -219,7 +252,6 @@
           setInputs(prev => ({ ...prev, item: '', amount: '', note: '' }));
         }
 
-        // 背景非同步寫入 Google Apps Script
         try {
           await fetch(GAS_URL, {
             method: 'POST',
@@ -237,7 +269,6 @@
         if (e) e.stopPropagation();
         if(!confirm('確認將此紀錄從資料庫永久抹除？\nCONFIRM DATA ERADICATION?')) return;
         
-        // 樂觀刪除
         setRecords(prev => prev.filter(r => r.id !== id));
         if (!isFiltering) setTotalRecords(prev => prev - 1);
         if (editModal.isOpen) setEditModal({ isOpen: false, data: null });
@@ -330,37 +361,38 @@
       const calcEval = () => { try { setCalcStr(eval(calcStr).toString()); } catch(e) { setCalcStr('ERR'); } };
 
       if (isLoading) return (
-        <div className="fixed inset-0 bg-slate-50/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-center">
-          <div className="relative w-20 h-20">
-            <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-slate-800 rounded-full border-t-transparent animate-spin"></div>
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center">
+          <div className="relative w-24 h-24">
+            <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-slate-900 rounded-full border-t-transparent animate-[spin_1.5s_linear_infinite]"></div>
+            <div className="absolute inset-4 border-4 border-slate-200 rounded-full border-b-transparent animate-[spin_2s_linear_infinite_reverse]"></div>
           </div>
-          <div className="mt-8 text-sm tracking-[0.3em] text-slate-800 font-medium bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-            INITIALIZING AEGIS CORE...
+          <div className="mt-10 text-xs tracking-[0.4em] text-slate-800 font-bold bg-white/80 px-6 py-2.5 rounded-full border border-slate-200 shadow-sm backdrop-blur-sm">
+            INITIALIZING AEGIS V8.5
           </div>
         </div>
       );
 
       return (
-        <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
+        <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8 relative z-10">
           
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4">
             <div className="pt-4">
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 flex items-center gap-4">
                 林林家的記帳本
-                <span className="text-xs px-3 py-1 bg-white border border-slate-200 text-slate-500 rounded-full font-mono shadow-sm">V8 Dual-Node</span>
+                <span className="text-xs px-3 py-1 bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-500 rounded-full font-mono shadow-sm tracking-wider">V8.5 Dual-Node</span>
               </h1>
-              <p className="text-sm font-semibold text-slate-400 mt-3 tracking-[0.15em] uppercase flex items-center gap-2">
+              <p className="text-[13px] font-semibold text-slate-400 mt-4 tracking-[0.2em] uppercase flex items-center gap-2">
                 FOS LEDGER // AEGIS CORE ARCHITECTURE
               </p>
             </div>
             <div className="flex flex-wrap gap-3 w-full md:w-auto">
-              <button onClick={() => { setFilterPanelOpen(true); setIsFilterMinimized(false); }} className="flex-1 md:flex-none px-6 py-3 bg-white text-slate-600 rounded-2xl border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2 text-sm font-bold tracking-widest">
-                <span>空間濾鏡 FILTER</span>
+              <button onClick={() => { setFilterPanelOpen(true); setIsFilterMinimized(false); }} className="active-press flex-1 md:flex-none px-6 py-3.5 bg-white/80 backdrop-blur-md text-slate-600 rounded-2xl border border-slate-200 hover:bg-white hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2 text-sm font-bold tracking-widest hover-lift">
+                <span>⏳ 空間濾鏡 FILTER</span>
               </button>
-              <button onClick={() => { setCalcOpen(true); setIsCalcMinimized(false); }} className="flex-1 md:flex-none px-6 py-3 bg-white text-slate-600 rounded-2xl border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2 text-sm font-bold tracking-widest">
-                <span>算力模組 CALC</span>
+              <button onClick={() => { setCalcOpen(true); setIsCalcMinimized(false); }} className="active-press flex-1 md:flex-none px-6 py-3.5 bg-white/80 backdrop-blur-md text-slate-600 rounded-2xl border border-slate-200 hover:bg-white hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2 text-sm font-bold tracking-widest hover-lift">
+                <span>🧮 計算機 CALC</span>
               </button>
             </div>
           </div>
@@ -371,69 +403,69 @@
             <div className="xl:col-span-5 space-y-6">
               
               {/* 狀態大螢幕 */}
-              <div className="aegis-panel p-8">
-                <div className="flex justify-between items-start mb-8">
+              <div className="aegis-panel p-8 md:p-10 hover-lift">
+                <div className="flex justify-between items-start mb-10">
                   <h2 className="text-xl md:text-2xl font-bold text-slate-800 flex flex-col gap-1">
                     {isFiltering ? '檢索區間結算' : '當前週期結算'}
-                    <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">{isFiltering ? 'Filtered Matrix' : 'Live Sync Matrix'}</span>
+                    <span className="text-[10px] font-mono text-slate-400 tracking-[0.15em] uppercase">{isFiltering ? 'Filtered Matrix' : 'Live Sync Matrix'}</span>
                   </h2>
-                  <div className={`text-[10px] font-mono px-3 py-1 rounded-full border ${isFiltering ? 'border-sky-200 bg-sky-50 text-sky-600' : 'border-slate-200 bg-white text-slate-500 shadow-sm'}`}>
+                  <div className={`text-[10px] font-mono px-3 py-1.5 rounded-full border shadow-sm ${isFiltering ? 'border-sky-200 bg-sky-50 text-sky-600' : 'border-slate-200 bg-white text-slate-500'}`}>
                     {isFiltering ? '● FILTER ACTIVE' : '● ONLINE'}
                   </div>
                 </div>
                 
                 {liveStats.isPartial && !isFiltering && (
-                  <div className="text-xs text-slate-500 mb-6 bg-white/50 px-4 py-2 rounded-xl border border-slate-100 flex items-center gap-2 shadow-sm font-mono">
+                  <div className="text-xs text-slate-500 mb-6 bg-white/60 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-slate-100 flex items-center gap-2 shadow-sm font-mono">
                     <span className="animate-pulse w-2 h-2 bg-amber-400 rounded-full inline-block"></span> REBUILDING GLOBAL CACHE
                   </div>
                 )}
 
-                <div className="flex flex-col items-center justify-center py-10 bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+                <div className="flex flex-col items-center justify-center py-12 bg-white/90 backdrop-blur-md rounded-[2rem] border border-slate-100 shadow-[0_10px_40px_rgb(15,23,42,0.04)] relative overflow-hidden transition-transform duration-500 hover:scale-[1.01]">
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
                   {liveStats.balance > 0 ? (
                     <div className="text-center w-full px-4">
-                      <div className="text-xs font-bold text-slate-400 mb-3 tracking-[0.2em]">妹妹 ➔ 哥哥</div>
-                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 drop-shadow-sm font-mono">$ {liveStats.balance.toLocaleString()}</div>
+                      <div className="text-xs font-bold text-slate-400 mb-4 tracking-[0.25em]">妹妹 ➔ 哥哥</div>
+                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono">$ {liveStats.balance.toLocaleString()}</div>
                     </div>
                   ) : liveStats.balance < 0 ? (
                     <div className="text-center w-full px-4">
-                      <div className="text-xs font-bold text-slate-400 mb-3 tracking-[0.2em]">哥哥 ➔ 妹妹</div>
-                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 drop-shadow-sm font-mono">$ {Math.abs(liveStats.balance).toLocaleString()}</div>
+                      <div className="text-xs font-bold text-slate-400 mb-4 tracking-[0.25em]">哥哥 ➔ 妹妹</div>
+                      <div className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-800 drop-shadow-sm font-mono">$ {Math.abs(liveStats.balance).toLocaleString()}</div>
                     </div>
                   ) : (
-                    <div className="text-center w-full px-4 py-4">
-                      <div className="text-3xl font-bold text-emerald-400 tracking-[0.2em]">系統結清</div>
-                      <div className="text-xs font-mono text-slate-400 mt-2">CLEARED</div>
+                    <div className="text-center w-full px-4 py-6">
+                      <div className="text-3xl font-bold text-emerald-400 tracking-[0.25em]">系統結清</div>
+                      <div className="text-xs font-mono text-slate-400 mt-3">CLEARED</div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="bg-white/80 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="text-[11px] font-bold text-slate-400 mb-2 tracking-widest">公費均攤 SHARED</div>
-                    <div className="text-xl font-bold text-slate-700 font-mono">$ {liveStats.sharedPerPerson.toLocaleString()}</div>
+                <div className="mt-8 grid grid-cols-2 gap-5">
+                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                    <div className="text-[11px] font-bold text-slate-400 mb-3 tracking-widest">公費均攤 SHARED</div>
+                    <div className="text-xl md:text-2xl font-bold text-slate-700 font-mono">$ {liveStats.sharedPerPerson.toLocaleString()}</div>
                   </div>
-                  <div className="bg-white/80 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="text-[11px] font-bold text-slate-400 mb-2 tracking-widest">墊付 DEBT</div>
-                    <div className="text-xs font-semibold text-slate-600 flex justify-between font-mono"><span>妹:</span> <span>${liveStats.sDebt.toLocaleString()}</span></div>
-                    <div className="text-xs font-semibold text-slate-600 flex justify-between mt-2 font-mono"><span>哥:</span> <span>${liveStats.bDebt.toLocaleString()}</span></div>
+                  <div className="bg-white/80 backdrop-blur-md p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md flex flex-col justify-center">
+                    <div className="text-[11px] font-bold text-slate-400 mb-3 tracking-widest">墊付 DEBT</div>
+                    <div className="text-sm font-semibold text-slate-600 flex justify-between font-mono"><span>妹:</span> <span>${liveStats.sDebt.toLocaleString()}</span></div>
+                    <div className="text-sm font-semibold text-slate-600 flex justify-between mt-2 font-mono"><span>哥:</span> <span>${liveStats.bDebt.toLocaleString()}</span></div>
                   </div>
                 </div>
               </div>
 
               {/* 輸入面板 */}
-              <form onSubmit={handleSubmit} className="aegis-panel p-8 space-y-8 relative overflow-hidden">
+              <form onSubmit={handleSubmit} className="aegis-panel p-8 md:p-10 space-y-8 relative overflow-hidden hover-lift">
                 <div className="flex justify-between items-center pb-2">
                   <h2 className="text-xl font-bold text-slate-800">寫入核心 <span className="text-[10px] font-mono text-slate-400 ml-2 uppercase tracking-widest">Input Engine</span></h2>
                 </div>
 
                 <div className="space-y-4">
                   <label className="text-[11px] font-bold text-slate-500 tracking-widest">支付端點 SOURCE</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button type="button" className={`py-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${inputs.payer==='brother'?'bg-slate-900 text-white border-slate-900 shadow-lg scale-[1.02]':'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}`} onClick={()=>setInputs({...inputs, payer:'brother'})}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button type="button" className={`active-press py-4 md:py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1.5 ${inputs.payer==='brother'?'bg-slate-900 text-white border-slate-900 shadow-[0_10px_25px_rgb(15,23,42,0.2)]':'bg-white/90 text-slate-500 border-slate-200 hover:bg-white hover:shadow-md'}`} onClick={()=>setInputs({...inputs, payer:'brother'})}>
                       <span className="text-2xl mb-1">💰</span><span className="font-bold text-sm tracking-wide">哥哥</span>
                     </button>
-                    <button type="button" className={`py-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${inputs.payer==='sister'?'bg-slate-900 text-white border-slate-900 shadow-lg scale-[1.02]':'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}`} onClick={()=>setInputs({...inputs, payer:'sister'})}>
+                    <button type="button" className={`active-press py-4 md:py-5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1.5 ${inputs.payer==='sister'?'bg-slate-900 text-white border-slate-900 shadow-[0_10px_25px_rgb(15,23,42,0.2)]':'bg-white/90 text-slate-500 border-slate-200 hover:bg-white hover:shadow-md'}`} onClick={()=>setInputs({...inputs, payer:'sister'})}>
                       <span className="text-2xl mb-1">☔</span><span className="font-bold text-sm tracking-wide">妹妹</span>
                     </button>
                   </div>
@@ -441,42 +473,42 @@
 
                 <div className="space-y-4">
                   <label className="text-[11px] font-bold text-slate-500 tracking-widest">屬性 TYPE</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <button type="button" className={`py-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='shared'?'bg-white text-slate-900 border-slate-400 shadow-md ring-2 ring-slate-900/10 scale-[1.02]':'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'}`} onClick={()=>setInputs({...inputs, type:'shared'})}>
-                      <span className="text-xl">🤝</span><span className="font-bold text-xs tracking-wide">公積金</span>
+                  <div className="grid grid-cols-3 gap-3 md:gap-4">
+                    <button type="button" className={`active-press py-3 md:py-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='shared'?'bg-white text-slate-900 border-slate-400 shadow-[0_8px_20px_rgb(15,23,42,0.08)] ring-1 ring-slate-200':'bg-white/80 text-slate-400 border-slate-100 hover:bg-white hover:shadow-sm'}`} onClick={()=>setInputs({...inputs, type:'shared'})}>
+                      <span className="text-xl md:text-2xl">🤝</span><span className="font-bold text-xs tracking-wide">公積金</span>
                     </button>
-                    <button type="button" className={`py-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='sister_debt'?'bg-white text-slate-900 border-slate-400 shadow-md ring-2 ring-slate-900/10 scale-[1.02]':'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'}`} onClick={()=>setInputs({...inputs, type:'sister_debt'})}>
-                      <span className="text-xl">🏠</span><span className="font-bold text-xs tracking-wide">妹私用</span>
+                    <button type="button" className={`active-press py-3 md:py-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='sister_debt'?'bg-white text-slate-900 border-slate-400 shadow-[0_8px_20px_rgb(15,23,42,0.08)] ring-1 ring-slate-200':'bg-white/80 text-slate-400 border-slate-100 hover:bg-white hover:shadow-sm'}`} onClick={()=>setInputs({...inputs, type:'sister_debt'})}>
+                      <span className="text-xl md:text-2xl">🏠</span><span className="font-bold text-xs tracking-wide">妹私用</span>
                     </button>
-                    <button type="button" className={`py-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='brother_debt'?'bg-white text-slate-900 border-slate-400 shadow-md ring-2 ring-slate-900/10 scale-[1.02]':'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'}`} onClick={()=>setInputs({...inputs, type:'brother_debt'})}>
-                      <span className="text-xl">🏚️</span><span className="font-bold text-xs tracking-wide">哥私用</span>
+                    <button type="button" className={`active-press py-3 md:py-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${inputs.type==='brother_debt'?'bg-white text-slate-900 border-slate-400 shadow-[0_8px_20px_rgb(15,23,42,0.08)] ring-1 ring-slate-200':'bg-white/80 text-slate-400 border-slate-100 hover:bg-white hover:shadow-sm'}`} onClick={()=>setInputs({...inputs, type:'brother_debt'})}>
+                      <span className="text-xl md:text-2xl">🏚️</span><span className="font-bold text-xs tracking-wide">哥私用</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-5 pt-4 border-t border-slate-100">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-5 pt-5 border-t border-slate-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest">日期 DATE</label>
-                      <input type="date" value={inputs.date} className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-700 font-mono focus:outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all shadow-sm" onChange={e=>setInputs({...inputs, date:e.target.value})}/>
+                      <input type="date" value={inputs.date} className="w-full input-neumorphic rounded-xl p-3.5 text-sm text-slate-700 font-mono outline-none" onChange={e=>setInputs({...inputs, date:e.target.value})}/>
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest">金額 AMOUNT</label>
-                      <input type="number" value={inputs.amount} placeholder="0" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xl font-bold font-mono text-slate-900 focus:outline-none focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all shadow-inner" onChange={e=>setInputs({...inputs, amount:e.target.value})}/>
+                      <input type="number" value={inputs.amount} placeholder="0" className="w-full input-neumorphic rounded-xl p-3.5 text-xl font-bold font-mono text-slate-900 outline-none" onChange={e=>setInputs({...inputs, amount:e.target.value})}/>
                     </div>
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest">品項 ITEM</label>
-                    <input type="text" value={inputs.item} placeholder="Input item name..." className="w-full bg-white border border-slate-200 rounded-xl p-4 text-base text-slate-800 focus:outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all shadow-sm font-medium" onChange={e=>setInputs({...inputs, item:e.target.value})}/>
+                    <input type="text" value={inputs.item} placeholder="Input item name..." className="w-full input-neumorphic rounded-xl p-4 text-base text-slate-800 font-medium outline-none" onChange={e=>setInputs({...inputs, item:e.target.value})}/>
                   </div>
                 </div>
                 
-                <div className="flex gap-3 pt-2">
-                  <button type="submit" className="flex-1 bg-slate-900 text-white font-bold tracking-widest rounded-2xl py-4 hover:bg-slate-800 active:scale-[0.98] transition-all shadow-[0_8px_20px_rgb(15,23,42,0.2)]">
+                <div className="flex gap-4 pt-4">
+                  <button type="submit" className="active-press flex-1 bg-slate-900 text-white font-bold tracking-widest rounded-2xl py-4.5 md:py-5 hover:bg-slate-800 transition-all shadow-[0_8px_20px_rgb(15,23,42,0.2)]">
                     EXECUTE WRITE
                   </button>
-                  <button type="button" onClick={addMilestone} className="w-20 bg-white text-slate-400 rounded-2xl py-4 border border-slate-200 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-sm flex items-center justify-center hover:text-slate-700">
-                    <span className="text-xl">🚩</span>
+                  <button type="button" onClick={addMilestone} className="active-press w-20 md:w-24 bg-white/80 backdrop-blur-sm text-slate-400 rounded-2xl py-4 border border-slate-200 hover:bg-white hover:shadow-md transition-all flex items-center justify-center hover:text-slate-700 hover-lift">
+                    <span className="text-xl md:text-2xl">🚩</span>
                   </button>
                 </div>
               </form>
@@ -485,10 +517,10 @@
             {/* 右側：資料庫列表 */}
             <div className="xl:col-span-7 space-y-6">
               
-              <div className="aegis-panel p-6 flex justify-between items-center">
-                <h2 className="text-xl font-bold text-slate-800">儲存矩陣 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest ml-2">Database Archive</span></h2>
-                <div className="text-[11px] font-mono text-slate-500 bg-white px-4 py-1.5 rounded-full border border-slate-200 shadow-sm">
-                  {isFiltering ? 'FILTER:' : 'VOL:'} <span className="font-bold text-slate-800">{records.length}</span> {isFiltering ? '' : `/ ${totalRecords}`}
+              <div className="aegis-panel p-6 md:p-8 flex justify-between items-center hover-lift">
+                <h2 className="text-xl font-bold text-slate-800">儲存矩陣 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline">Database Archive</span></h2>
+                <div className="text-[11px] font-mono text-slate-500 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+                  {isFiltering ? 'FILTER:' : 'VOL:'} <span className="font-bold text-slate-800 ml-1">{records.length}</span> {isFiltering ? '' : `/ ${totalRecords}`}
                 </div>
               </div>
 
@@ -499,53 +531,53 @@
                   const isExpanded = isFilteredMode ? true : expandedGroups[group.id]; 
 
                   return (
-                    <div key={group.id} className="space-y-3">
+                    <div key={group.id} className="space-y-4">
                       {!isFilteredMode && isCurrentCycle ? (
-                        <div className="bg-white/80 border border-slate-200 rounded-2xl p-5 flex justify-between items-center cursor-pointer hover:shadow-md transition-all shadow-sm" onClick={() => toggleGroup(group.id)}>
+                        <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-5 md:p-6 flex justify-between items-center cursor-pointer hover-lift shadow-sm" onClick={() => toggleGroup(group.id)}>
                            <div className="font-bold text-slate-800 tracking-wider flex items-center gap-3">
-                             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> LIVE CYCLE
+                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span> LIVE CYCLE
                            </div>
-                           <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
+                           <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-100 transition-colors hover:bg-slate-100">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
                         </div>
                       ) : !isFilteredMode && !isCurrentCycle ? (
-                        <div className="bg-slate-100/50 border border-slate-200 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover:bg-slate-50 transition-all gap-4 shadow-sm" onClick={() => toggleGroup(group.id)}>
+                        <div className="bg-slate-100/60 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover-lift gap-4 shadow-sm" onClick={() => toggleGroup(group.id)}>
                            <div className="flex-1">
-                             <div className="font-bold text-slate-700 flex items-center gap-2 text-sm tracking-widest uppercase"><span className="text-lg">🚩</span> Cycle Milestone</div>
-                             <div className="font-mono text-slate-400 text-xs mt-1 bg-white inline-block px-2 py-0.5 rounded border border-slate-100">{group.milestone?.date}</div>
+                             <div className="font-bold text-slate-700 flex items-center gap-2 text-sm tracking-widest uppercase"><span className="text-xl">🚩</span> Cycle Milestone</div>
+                             <div className="font-mono text-slate-500 text-xs mt-2 bg-white inline-block px-2.5 py-1 rounded-md border border-slate-100 shadow-sm">{group.milestone?.date}</div>
                            </div>
                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                             <button onClick={(e) => deleteRecord(group.milestone.id, e)} className="px-4 py-2 bg-white text-rose-500 text-[10px] font-bold rounded-lg border border-rose-100 hover:bg-rose-50 shadow-sm transition-all tracking-widest uppercase">
+                             <button onClick={(e) => deleteRecord(group.milestone.id, e)} className="active-press px-4 py-2 bg-white text-rose-500 text-[10px] font-bold rounded-lg border border-rose-100 hover:bg-rose-50 hover:border-rose-200 shadow-sm transition-all tracking-widest uppercase">
                                Erase
                              </button>
-                             <div className="text-[10px] font-mono font-bold text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-100">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
+                             <div className="text-[10px] font-mono font-bold text-slate-400 bg-white px-3.5 py-1.5 rounded-full border border-slate-100">{isExpanded ? 'COLLAPSE ▲' : 'EXPAND ▼'}</div>
                            </div>
                         </div>
                       ) : null}
 
                       {isExpanded && (
-                        <div className={`space-y-3 ${isFilteredMode ? '' : 'pl-2 sm:pl-6 border-l-2 border-slate-200/60'} animate-[fade-in-up_0.2s_ease-out]`}>
+                        <div className={`space-y-3.5 ${isFilteredMode ? '' : 'pl-2 sm:pl-8 border-l-2 border-slate-200/80'} animate-[fade-in-up_0.3s_ease-out]`}>
                           {group.records.length === 0 ? (
-                            <div className="py-10 bg-white/40 border border-dashed border-slate-300 rounded-2xl text-center text-slate-400 text-xs font-mono font-bold tracking-widest">NO DATA FOUND</div>
+                            <div className="py-12 bg-white/40 backdrop-blur-sm border-2 border-dashed border-slate-200 rounded-3xl text-center text-slate-400 text-xs font-mono font-bold tracking-widest">NO DATA FOUND</div>
                           ) : (
                             group.records.map((r) => (
-                              <div key={r.id} className="bg-white/90 backdrop-blur-md border border-slate-100 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer group hover:border-slate-300 hover:shadow-lg transition-all duration-300" onClick={() => setEditModal({isOpen: true, data: r})}>
-                                <div className="flex items-center gap-4 w-full">
-                                  <div className="text-3xl shrink-0 opacity-70 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300">{r.payer==='brother'?'💰':'☔'}</div>
+                              <div key={r.id} className="bg-white/85 backdrop-blur-md border border-slate-100 rounded-[1.25rem] p-5 md:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer group hover-lift" onClick={() => setEditModal({isOpen: true, data: r})}>
+                                <div className="flex items-center gap-4 md:gap-5 w-full">
+                                  <div className="text-3xl md:text-4xl shrink-0 opacity-70 group-hover:opacity-100 transition-all duration-400 group-hover:scale-110 group-hover:rotate-[-5deg] drop-shadow-sm">{r.payer==='brother'?'💰':'☔'}</div>
                                   <div className="flex-1 min-w-0">
-                                    <div className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <div className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2.5">
                                       <span className="truncate">{r.item}</span>
-                                      {r.type==='sister_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded border border-slate-200 uppercase">妹私 OWN</span>}
-                                      {r.type==='brother_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded border border-slate-200 uppercase">哥私 OWN</span>}
-                                      {r.type==='shared' && <span className="text-[9px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 px-2 py-1 rounded uppercase">🤝 公費 SHARED</span>}
+                                      {r.type==='sister_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm">妹私</span>}
+                                      {r.type==='brother_debt' && <span className="text-[9px] font-bold tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 uppercase shrink-0 shadow-sm">哥私</span>}
+                                      {r.type==='shared' && <span className="text-[9px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 px-2 py-1 rounded-md uppercase shrink-0 shadow-sm">🤝 公費</span>}
                                     </div>
-                                    <div className="text-[11px] text-slate-400 font-mono mt-1.5 flex items-center gap-3">
-                                      <span className="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{r.date}</span>
-                                      <span className="opacity-0 group-hover:opacity-100 text-sky-500 transition-opacity font-bold tracking-widest">EDIT_</span>
+                                    <div className="text-[11px] md:text-xs text-slate-400 font-mono mt-2 flex items-center gap-3">
+                                      <span className="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{r.date}</span>
+                                      <span className="opacity-0 group-hover:opacity-100 text-sky-500 transition-opacity font-bold tracking-widest bg-sky-50 px-2 py-0.5 rounded-md">EDIT_</span>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-3 sm:mt-0 text-right w-full sm:w-auto shrink-0">
-                                  <div className="text-2xl font-bold text-slate-800 font-mono tracking-tight group-hover:text-sky-600 transition-colors">$ {r.amount.toLocaleString()}</div>
+                                <div className="mt-4 sm:mt-0 text-right w-full sm:w-auto shrink-0">
+                                  <div className="text-2xl md:text-3xl font-bold text-slate-800 font-mono tracking-tight group-hover:text-sky-600 transition-colors">$ {r.amount.toLocaleString()}</div>
                                 </div>
                               </div>
                             ))
@@ -558,11 +590,11 @@
               </div>
 
               {!isFiltering && records.length < totalRecords && (
-                <div className="pt-8 flex justify-center">
+                <div className="pt-10 flex justify-center pb-8">
                   <button 
                     onClick={fetchMoreRecords} 
                     disabled={isLoadMoreLoading}
-                    className={`bg-white text-slate-600 text-xs font-bold tracking-widest border border-slate-200 rounded-full px-8 py-3 hover:bg-slate-50 hover:shadow-md transition-all uppercase shadow-sm ${isLoadMoreLoading ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+                    className={`active-press bg-white/90 backdrop-blur-sm text-slate-600 text-xs font-bold tracking-[0.15em] border border-slate-200 rounded-full px-8 py-3.5 hover:bg-white hover:shadow-lg transition-all uppercase shadow-sm ${isLoadMoreLoading ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
                   >
                     {isLoadMoreLoading ? 'Loading Matrix...' : 'Load Deep Archive'}
                   </button>
@@ -571,29 +603,29 @@
             </div>
           </div>
 
-          {/* 右下角：算力模組 */}
+          {/* 右下角：計算機 */}
           {calcOpen && (
             isCalcMinimized ? (
-              <button onClick={() => setIsCalcMinimized(false)} className="fixed bottom-8 right-8 z-50 bg-white border border-slate-200 rounded-full w-14 h-14 shadow-[0_8px_20px_rgb(0,0,0,0.08)] flex items-center justify-center hover:bg-slate-50 transition-transform active:scale-95 text-slate-600 font-mono text-xs font-bold tracking-widest">
+              <button onClick={() => setIsCalcMinimized(false)} className="active-press fixed bottom-8 right-8 z-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl w-16 h-16 shadow-[0_12px_30px_rgb(15,23,42,0.1)] flex items-center justify-center hover-lift text-slate-600 font-mono text-xs font-bold tracking-widest transition-all">
                 CALC
               </button>
             ) : (
-              <div className="fixed bottom-8 right-8 z-50 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl w-[85vw] max-w-[300px] shadow-[0_20px_40px_rgb(0,0,0,0.1)] overflow-hidden transition-all">
-                <div className="bg-slate-50/80 border-b border-slate-100 px-5 py-4 flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">Compute Node</span>
-                  <div className="flex gap-3">
-                    <button onClick={() => setIsCalcMinimized(true)} className="text-slate-400 hover:text-slate-700 text-lg">─</button>
-                    <button onClick={() => setCalcOpen(false)} className="text-slate-400 hover:text-rose-500 text-lg">✕</button>
+              <div className="fixed bottom-8 right-8 z-50 bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-[2rem] w-[85vw] max-w-[320px] shadow-[0_30px_60px_rgb(15,23,42,0.12)] overflow-hidden transition-all duration-300 transform origin-bottom-right">
+                <div className="bg-slate-50/80 border-b border-slate-100/80 px-6 py-4 flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-500 tracking-[0.25em] uppercase">計算機 Compute Node</span>
+                  <div className="flex gap-4">
+                    <button onClick={() => setIsCalcMinimized(true)} className="text-slate-400 hover:text-slate-700 text-lg transition-colors">─</button>
+                    <button onClick={() => setCalcOpen(false)} className="text-slate-400 hover:text-rose-500 text-lg transition-colors">✕</button>
                   </div>
                 </div>
-                <div className="p-5 space-y-4">
-                  <input type="text" value={calcStr} readOnly className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-right font-mono text-slate-800 outline-none text-2xl font-bold shadow-inner" />
-                  <div className="grid grid-cols-4 gap-2">
+                <div className="p-6 space-y-5">
+                  <input type="text" value={calcStr} readOnly className="w-full input-neumorphic rounded-2xl p-4.5 text-right font-mono text-slate-800 outline-none text-3xl font-bold tracking-tight" />
+                  <div className="grid grid-cols-4 gap-2.5">
                     {['7','8','9','/','4','5','6','*','1','2','3','-','0','.','+'].map(btn => (
-                      <button key={btn} onClick={()=>setCalcStr(prev => prev + btn)} className="bg-white border border-slate-200 rounded-xl p-3 text-slate-700 font-bold hover:bg-slate-50 active:bg-slate-100 active:scale-95 transition-all shadow-sm text-lg">{btn}</button>
+                      <button key={btn} onClick={()=>setCalcStr(prev => prev + btn)} className="active-press bg-white border border-slate-200/80 rounded-xl p-3.5 text-slate-700 font-bold hover:bg-slate-50 transition-all shadow-sm text-lg hover:border-slate-300">{btn}</button>
                     ))}
-                    <button onClick={calcEval} className="bg-slate-900 text-white rounded-xl p-3 font-bold hover:bg-slate-800 active:scale-95 transition-all shadow-md text-lg">=</button>
-                    <button onClick={()=>setCalcStr('')} className="col-span-4 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl p-3 text-[11px] font-bold tracking-[0.2em] hover:bg-slate-200 mt-2 transition-all uppercase">Clear Buffer</button>
+                    <button onClick={calcEval} className="active-press bg-slate-900 text-white rounded-xl p-3.5 font-bold hover:bg-slate-800 transition-all shadow-[0_4px_10px_rgb(15,23,42,0.2)] text-xl">=</button>
+                    <button onClick={()=>setCalcStr('')} className="active-press col-span-4 bg-slate-100/80 text-slate-500 border border-slate-200/80 rounded-xl p-3.5 text-[11px] font-bold tracking-[0.2em] hover:bg-slate-200 mt-2 transition-all uppercase shadow-sm">清除 Clear Buffer</button>
                   </div>
                 </div>
               </div>
@@ -603,31 +635,31 @@
           {/* 左下角：空間濾鏡 */}
           {filterPanelOpen && (
             isFilterMinimized ? (
-              <button onClick={() => setIsFilterMinimized(false)} className="fixed bottom-8 left-8 z-50 bg-white border border-slate-200 rounded-full w-14 h-14 shadow-[0_8px_20px_rgb(0,0,0,0.08)] flex items-center justify-center hover:bg-slate-50 transition-transform active:scale-95 text-slate-600 font-mono text-xs font-bold tracking-widest">
+              <button onClick={() => setIsFilterMinimized(false)} className="active-press fixed bottom-8 left-8 z-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl w-16 h-16 shadow-[0_12px_30px_rgb(15,23,42,0.1)] flex items-center justify-center hover-lift text-slate-600 font-mono text-xs font-bold tracking-widest transition-all">
                 FLTR
               </button>
             ) : (
-              <div className="fixed bottom-8 left-8 z-50 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl w-[85vw] max-w-[300px] shadow-[0_20px_40px_rgb(0,0,0,0.1)] overflow-hidden transition-all">
-                <div className="bg-slate-50/80 border-b border-slate-100 px-5 py-4 flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-500 tracking-[0.2em] uppercase">Temporal Filter</span>
-                  <div className="flex gap-3">
-                    <button onClick={() => setIsFilterMinimized(true)} className="text-slate-400 hover:text-slate-700 text-lg">─</button>
-                    <button onClick={() => setFilterPanelOpen(false)} className="text-slate-400 hover:text-rose-500 text-lg">✕</button>
+              <div className="fixed bottom-8 left-8 z-50 bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-[2rem] w-[85vw] max-w-[320px] shadow-[0_30px_60px_rgb(15,23,42,0.12)] overflow-hidden transition-all duration-300 transform origin-bottom-left">
+                <div className="bg-slate-50/80 border-b border-slate-100/80 px-6 py-4 flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-500 tracking-[0.25em] uppercase">空間濾鏡 Temporal Filter</span>
+                  <div className="flex gap-4">
+                    <button onClick={() => setIsFilterMinimized(true)} className="text-slate-400 hover:text-slate-700 text-lg transition-colors">─</button>
+                    <button onClick={() => setFilterPanelOpen(false)} className="text-slate-400 hover:text-rose-500 text-lg transition-colors">✕</button>
                   </div>
                 </div>
-                <div className="p-5 space-y-5">
+                <div className="p-6 space-y-6">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 mb-2 block tracking-widest uppercase">Start Point</label>
-                    <input type="date" value={filterDates.start} onChange={e=>setFilterDates({...filterDates, start: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-mono text-slate-700 outline-none focus:border-slate-400" />
+                    <label className="text-[10px] font-bold text-slate-400 mb-2 block tracking-[0.2em] uppercase">起始點 Start Point</label>
+                    <input type="date" value={filterDates.start} onChange={e=>setFilterDates({...filterDates, start: e.target.value})} className="w-full input-neumorphic rounded-xl p-3.5 text-sm font-mono text-slate-700 outline-none" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 mb-2 block tracking-widest uppercase">End Point</label>
-                    <input type="date" value={filterDates.end} onChange={e=>setFilterDates({...filterDates, end: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-mono text-slate-700 outline-none focus:border-slate-400" />
+                    <label className="text-[10px] font-bold text-slate-400 mb-2 block tracking-[0.2em] uppercase">結束點 End Point</label>
+                    <input type="date" value={filterDates.end} onChange={e=>setFilterDates({...filterDates, end: e.target.value})} className="w-full input-neumorphic rounded-xl p-3.5 text-sm font-mono text-slate-700 outline-none" />
                   </div>
-                  <div className="flex gap-3 pt-2">
-                    <button onClick={executeFilter} className="flex-1 bg-slate-900 text-white text-[11px] font-bold tracking-[0.2em] rounded-xl py-3 hover:bg-slate-800 active:scale-95 transition-all shadow-md uppercase">Scan</button>
+                  <div className="flex gap-3 pt-3">
+                    <button onClick={executeFilter} className="active-press flex-1 bg-slate-900 text-white text-[11px] font-bold tracking-[0.2em] rounded-xl py-3.5 hover:bg-slate-800 transition-all shadow-[0_4px_12px_rgb(15,23,42,0.2)] uppercase">檢索 Scan</button>
                     {isFiltering && (
-                      <button onClick={clearFilter} className="flex-1 bg-white text-rose-500 border border-rose-200 text-[11px] font-bold tracking-[0.2em] rounded-xl py-3 hover:bg-rose-50 active:scale-95 transition-all shadow-sm uppercase">Reset</button>
+                      <button onClick={clearFilter} className="active-press flex-1 bg-white text-rose-500 border border-rose-200 text-[11px] font-bold tracking-[0.2em] rounded-xl py-3.5 hover:bg-rose-50 hover:border-rose-300 transition-all shadow-sm uppercase">重置 Reset</button>
                     )}
                   </div>
                 </div>
@@ -637,31 +669,31 @@
 
           {/* 編輯面板 Modal */}
           {editModal.isOpen && editModal.data && (
-            <div className="fixed inset-0 z-[8000] bg-slate-900/20 backdrop-blur-md flex items-center justify-center p-4">
-              <form onSubmit={handleEditSubmit} className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl space-y-6 relative border border-slate-100">
-                <div className="flex justify-between items-start pb-4 border-b border-slate-100">
+            <div className="fixed inset-0 z-[8000] bg-slate-900/30 backdrop-blur-md flex items-center justify-center p-4">
+              <form onSubmit={handleEditSubmit} className="bg-white/95 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 max-w-lg w-full shadow-[0_30px_60px_rgb(15,23,42,0.15)] space-y-7 relative border border-slate-100 transform transition-all scale-100">
+                <div className="flex justify-between items-start pb-5 border-b border-slate-100">
                   <h2 className="text-xl font-bold text-slate-800 tracking-wider">EDIT RECORD</h2>
-                  <button type="button" onClick={()=>setEditModal({isOpen:false, data:null})} className="text-slate-400 hover:text-slate-800 transition-colors w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full">✕</button>
+                  <button type="button" onClick={()=>setEditModal({isOpen:false, data:null})} className="text-slate-400 hover:text-slate-800 transition-colors w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-full">✕</button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest uppercase">Date</label>
-                    <input type="date" value={editModal.data.date} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, date:e.target.value}})} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 font-mono outline-none focus:border-slate-400" />
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-[0.2em] uppercase">Date</label>
+                    <input type="date" value={editModal.data.date} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, date:e.target.value}})} className="w-full input-neumorphic rounded-xl p-3.5 text-sm text-slate-700 font-mono outline-none" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest uppercase">Item</label>
-                    <input type="text" value={editModal.data.item} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, item:e.target.value}})} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-base text-slate-800 font-medium outline-none focus:border-slate-400" />
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-[0.2em] uppercase">Item</label>
+                    <input type="text" value={editModal.data.item} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, item:e.target.value}})} className="w-full input-neumorphic rounded-xl p-4 text-base text-slate-800 font-medium outline-none" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-widest uppercase">Amount</label>
-                    <input type="number" value={editModal.data.amount} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, amount:parseFloat(e.target.value)}})} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xl font-bold text-slate-900 font-mono outline-none focus:border-slate-400" />
+                    <label className="text-[10px] font-bold text-slate-400 block mb-2 tracking-[0.2em] uppercase">Amount</label>
+                    <input type="number" value={editModal.data.amount} onChange={e=>setEditModal({isOpen:true, data:{...editModal.data, amount:parseFloat(e.target.value)}})} className="w-full input-neumorphic rounded-xl p-4 text-2xl font-bold text-slate-900 font-mono outline-none" />
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-6">
-                  <button type="submit" className="flex-1 bg-slate-900 text-white text-xs font-bold tracking-widest rounded-xl py-4 hover:bg-slate-800 active:scale-[0.98] transition-all shadow-lg uppercase">Update Matrix</button>
-                  <button type="button" onClick={(e)=>deleteRecord(editModal.data.id, e)} className="px-8 bg-white text-rose-500 text-xs font-bold tracking-widest rounded-xl py-4 border border-rose-200 hover:bg-rose-50 active:scale-[0.98] transition-all uppercase">Erase</button>
+                <div className="flex gap-4 pt-6 border-t border-slate-50">
+                  <button type="submit" className="active-press flex-1 bg-slate-900 text-white text-xs font-bold tracking-widest rounded-xl py-4.5 hover:bg-slate-800 transition-all shadow-[0_8px_20px_rgb(15,23,42,0.2)] uppercase">Update Matrix</button>
+                  <button type="button" onClick={(e)=>deleteRecord(editModal.data.id, e)} className="active-press px-8 bg-white text-rose-500 text-xs font-bold tracking-widest rounded-xl py-4.5 border border-rose-200 hover:bg-rose-50 hover:border-rose-300 transition-all uppercase shadow-sm">Erase</button>
                 </div>
               </form>
             </div>
@@ -669,15 +701,15 @@
 
           {/* 警告彈窗 */}
           {alertData && (
-            <div className="fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-10 max-w-sm w-full text-center shadow-[0_20px_50px_rgb(0,0,0,0.15)] border border-slate-100">
-                <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                  <span className="text-3xl">⚠️</span>
+            <div className="fixed inset-0 z-[9999] bg-slate-900/50 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="bg-white/95 backdrop-blur-xl rounded-[2rem] p-10 max-w-sm w-full text-center shadow-[0_30px_60px_rgb(0,0,0,0.2)] border border-slate-100/50 transform transition-all scale-100">
+                <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-rose-100/50">
+                  <span className="text-4xl">⚠️</span>
                 </div>
-                <h2 className="text-sm font-bold text-slate-800 mb-2 tracking-widest uppercase">{alertData.enTitle}</h2>
+                <h2 className="text-xs font-bold text-slate-400 mb-2 tracking-[0.2em] uppercase">{alertData.enTitle}</h2>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">{alertData.title}</h3>
-                <p className="text-sm text-slate-500 mb-8 font-medium">{alertData.desc}</p>
-                <button onClick={()=>setAlertData(null)} className="w-full bg-slate-900 text-white text-xs font-bold tracking-widest rounded-xl py-4 hover:bg-slate-800 active:scale-[0.98] transition-all shadow-lg uppercase">Acknowledge</button>
+                <p className="text-sm text-slate-500 mb-8 font-medium leading-relaxed">{alertData.desc}</p>
+                <button onClick={()=>setAlertData(null)} className="active-press w-full bg-slate-900 text-white text-[11px] font-bold tracking-widest rounded-xl py-4 hover:bg-slate-800 transition-all shadow-[0_8px_20px_rgb(15,23,42,0.2)] uppercase">Acknowledge</button>
               </div>
             </div>
           )}
