@@ -74,6 +74,10 @@
       100% { transform: translate(-4%, -6%) scale(0.92) rotate(-5deg); }
     }
 
+    @keyframes fos-spin { to { transform: rotate(360deg); } }
+    .fos-spin     { animation: fos-spin 1.5s linear infinite; }
+    .fos-spin-rev { animation: fos-spin 2s   linear infinite reverse; }
+
     /* Aegis 主機殼 */
     .aegis-panel {
       background: rgba(255, 255, 255, 0.7);
@@ -183,7 +187,7 @@
     const { useState, useMemo, useEffect } = React;
 
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyOA5zlzlwyKVNPFG5EQmoFqileorfxJ2XZ6ETrW4xzK18AXE40KW3VavqqhFaxolbD/exec';
-    const APP_VERSION = '2026/07/21 03:00';  // 改版時同步更新
+    const APP_VERSION = '2026/07/22 16:00';  // 改版時同步更新
 
     const formatSafeDate = (rawDate) => {
       if (!rawDate) return "無日期";
@@ -449,8 +453,8 @@
         <div className="fixed inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center">
           <div className="relative w-24 h-24">
             <div className="absolute inset-0 border-4 border-slate-100 dark:border-slate-800 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-slate-900 dark:border-sky-400 rounded-full border-t-transparent animate-[spin_1.5s_linear_infinite]"></div>
-            <div className="absolute inset-4 border-4 border-sky-400 dark:border-slate-300 rounded-full border-b-transparent animate-[spin_2s_linear_infinite_reverse]"></div>
+            <div className="absolute inset-0 border-4 border-slate-900 dark:border-sky-400 rounded-full border-t-transparent fos-spin"></div>
+            <div className="absolute inset-4 border-4 border-sky-400 dark:border-slate-300 rounded-full border-b-transparent fos-spin-rev"></div>
           </div>
           <div className="mt-10 text-xs tracking-[0.4em] text-slate-800 dark:text-sky-100 font-bold bg-white/80 dark:bg-slate-800/80 px-6 py-2.5 rounded-full border border-sky-100 dark:border-slate-700 shadow-[0_0_15px_rgba(56,189,248,0.2)] backdrop-blur-sm">
             INITIALIZING AEGIS V8.8
