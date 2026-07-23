@@ -187,7 +187,8 @@
     const { useState, useMemo, useEffect } = React;
 
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyOA5zlzlwyKVNPFG5EQmoFqileorfxJ2XZ6ETrW4xzK18AXE40KW3VavqqhFaxolbD/exec';
-    const APP_VERSION = '2026/07/22 17:00';  // 改版時同步更新
+    const AUTH_TOKEN = '061FSEF1S6F56SF1SDF065';
+    const APP_VERSION = '2026/07/23 10:00';  // 改版時同步更新
 
     const formatSafeDate = (rawDate) => {
       if (!rawDate) return "無日期";
@@ -250,7 +251,7 @@
       const fetchInitialData = async () => {
         setIsLoading(true);
         try {
-          const res = await fetch(`${GAS_URL}?action=initial`);
+          const res = await fetch(`${GAS_URL}?action=initial&token=${encodeURIComponent(AUTH_TOKEN)}`);
           const payload = await res.json();
           const cleanRecords = payload.records.map(r => ({...r, date: formatSafeDate(r.date)}));
           setRecords(cleanRecords);
@@ -271,7 +272,7 @@
       const fetchMoreRecords = async () => {
         setIsLoadMoreLoading(true);
         try {
-          const res = await fetch(`${GAS_URL}?action=loadMore&offset=${records.length}`);
+          const res = await fetch(`${GAS_URL}?action=loadMore&offset=${records.length}&token=${encodeURIComponent(AUTH_TOKEN)}`);
           const payload = await res.json();
           setRecords(prev => {
              const cleanMore = payload.records.map(r => ({...r, date: formatSafeDate(r.date)}));
@@ -293,7 +294,7 @@
         }
         setIsLoading(true);
         try {
-          const res = await fetch(`${GAS_URL}?action=filter&start=${filterDates.start}&end=${filterDates.end}`);
+          const res = await fetch(`${GAS_URL}?action=filter&start=${filterDates.start}&end=${filterDates.end}&token=${encodeURIComponent(AUTH_TOKEN)}`);
           const payload = await res.json();
           const cleanRecords = payload.records.map(r => ({...r, date: formatSafeDate(r.date)}));
           setRecords(cleanRecords);
@@ -339,7 +340,8 @@
             method: 'POST',
             body: JSON.stringify({
               action: isEdit ? 'edit' : 'add',
-              data: safeRecord
+              data: safeRecord,
+              token: AUTH_TOKEN
             })
           });
         } catch(e) {
@@ -358,7 +360,7 @@
         try {
           await fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify({ action: 'delete', id: id })
+            body: JSON.stringify({ action: 'delete', id: id, token: AUTH_TOKEN })
           });
         } catch(e) {
           console.error("刪除失敗", e);
