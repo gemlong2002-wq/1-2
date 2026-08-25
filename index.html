@@ -188,7 +188,7 @@
 
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyOA5zlzlwyKVNPFG5EQmoFqileorfxJ2XZ6ETrW4xzK18AXE40KW3VavqqhFaxolbD/exec';
     const AUTH_TOKEN = '061FSEF1S6F56SF1SDF065';
-    const APP_VERSION = '2026/07/23 10:00';  // 改版時同步更新
+    const APP_VERSION = '2026/08/25 23:57';  // 改版時同步更新
 
     const formatSafeDate = (rawDate) => {
       if (!rawDate) return "無日期";
@@ -229,6 +229,11 @@
       const [isFilterMinimized, setIsFilterMinimized] = useState(false);
       const [isFiltering, setIsFiltering] = useState(false);
       const [filterDates, setFilterDates] = useState({ start: '', end: '' });
+
+      const [searchKeyword, setSearchKeyword] = useState('');
+      const [allRecordsCache, setAllRecordsCache] = useState(null);
+      const [isSearchLoading, setIsSearchLoading] = useState(false);
+      const isSearching = searchKeyword.trim().length > 0;
 
       const [expandedGroups, setExpandedGroups] = useState({ 'current': true });
 
@@ -312,6 +317,41 @@
         setFilterDates({ start: '', end: '' });
         fetchInitialData();
       };
+
+      useEffect(() => {
+        if (!isSearching || allRecordsCache) return;
+        let cancelled = false;
+        const fetchAllForSearch = async () => {
+          setIsSearchLoading(true);
+          try {
+            const res = await fetch(`${GAS_URL}?action=filter&start=2000-01-01&end=2099-12-31&token=${encodeURIComponent(AUTH_TOKEN)}`);
+            const payload = await res.json();
+            if (cancelled) return;
+            const cleanRecords = payload.records.map(r => ({...r, date: formatSafeDate(r.date)}));
+            setAllRecordsCache(cleanRecords);
+          } catch(e) {
+            if (!cancelled) triggerAlert('搜尋失敗', 'SEARCH ERROR', '無法取得全部歷史資料。', e.toString());
+          } finally {
+            if (!cancelled) setIsSearchLoading(false);
+          }
+        };
+        fetchAllForSearch();
+        return () => { cancelled = true; };
+      }, [isSearching, allRecordsCache]);
+
+      const searchResults = useMemo(() => {
+        if (!isSearching || !allRecordsCache) return [];
+        const kw = searchKeyword.trim().toLowerCase();
+        const filtered = allRecordsCache.filter(r => {
+          if (r.type === 'milestone') return false;
+          const item = String(r.item || '').toLowerCase();
+          const note = String(r.note || '').toLowerCase();
+          const amount = String(r.amount ?? '');
+          return item.includes(kw) || note.includes(kw) || amount.includes(kw);
+        });
+        filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || b.timestamp - a.timestamp);
+        return filtered;
+      }, [isSearching, allRecordsCache, searchKeyword]);
 
       const triggerAlert = (title, enTitle, desc, enDesc) => { setAlertData({ title, enTitle, desc, enDesc }); };
 
@@ -400,6 +440,7 @@
       }, [records, totalRecords, globalStats, isFiltering]);
 
       const groupedRecords = useMemo(() => {
+        if (isSearching) { return [{ milestone: null, records: searchResults, id: 'search' }]; }
         if (isFiltering) { return [{ milestone: null, records: records, id: 'filtered' }]; }
         const groups = [];
         let currentGroup = { milestone: null, records: [], id: 'current' };
@@ -411,7 +452,7 @@
         });
         if (currentGroup.records.length > 0 || currentGroup.milestone) { groups.push(currentGroup); }
         return groups;
-      }, [records, isFiltering]);
+      }, [records, isFiltering, isSearching, searchResults]);
 
       const toggleGroup = (id) => { setExpandedGroups(prev => ({ ...prev, [id]: !prev[id] })); };
 
@@ -487,6 +528,19 @@
                   {isDarkMode ? '☀️ 光學 SYSTEM' : '🌙 暗態 SYSTEM'}
                 </span>
               </button>
+              <div className="relative flex-1 basis-full md:basis-auto md:flex-none order-first md:order-none">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">🔍</span>
+                <input
+                  type="text"
+                  value={searchKeyword}
+                  onChange={e => setSearchKeyword(e.target.value)}
+                  placeholder="搜尋品項 / 備註 / 金額..."
+                  className="w-full md:w-56 pl-10 pr-9 py-3.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-600 dark:text-slate-300 rounded-2xl border border-slate-200 dark:border-slate-700 focus:border-sky-400 dark:focus:border-sky-500 outline-none shadow-sm text-sm font-bold tracking-wide transition-all"
+                />
+                {searchKeyword && (
+                  <button onClick={() => setSearchKeyword('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 text-sm transition-colors">✕</button>
+                )}
+              </div>
               <button onClick={() => { setFilterPanelOpen(true); setIsFilterMinimized(false); }} className="active-press flex-1 md:flex-none px-6 py-3.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-600 dark:text-slate-300 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm flex items-center justify-center gap-2 text-sm font-bold tracking-widest hover-micro-lift group/btn">
                 <span className="transition-transform duration-300 group-hover/btn:scale-110 group-hover/btn:text-sky-600 dark:group-hover/btn:text-sky-400">⏳ 空間濾鏡</span>
               </button>
@@ -625,15 +679,15 @@
               <div className="aegis-panel p-6 md:p-8 flex justify-between items-center hover-lift group">
                 <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 transition-transform duration-300 origin-left group-hover:scale-105">儲存矩陣 <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-2 hidden sm:inline">Database Archive</span></h2>
                 <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm transition-transform duration-300 origin-right group-hover:scale-105 group-hover:text-sky-600 dark:group-hover:text-sky-400">
-                  {isFiltering ? 'FILTER:' : 'VOL:'} <span className="font-bold text-slate-800 dark:text-slate-200 ml-1">{records.length}</span> {isFiltering ? '' : `/ ${totalRecords}`}
+                  {isSearching ? 'SEARCH:' : isFiltering ? 'FILTER:' : 'VOL:'} <span className="font-bold text-slate-800 dark:text-slate-200 ml-1">{isSearching ? searchResults.length : records.length}</span> {(isSearching || isFiltering) ? '' : `/ ${totalRecords}`}
                 </div>
               </div>
 
               <div className="space-y-6">
                 {groupedRecords.map((group, index) => {
-                  const isFilteredMode = group.id === 'filtered';
+                  const isFilteredMode = group.id === 'filtered' || group.id === 'search';
                   const isCurrentCycle = group.id === 'current';
-                  const isExpanded = isFilteredMode ? true : expandedGroups[group.id]; 
+                  const isExpanded = isFilteredMode ? true : expandedGroups[group.id];
 
                   return (
                     <div key={group.id} className="space-y-4">
@@ -661,7 +715,9 @@
 
                       {isExpanded && (
                         <div className={`space-y-3.5 ${isFilteredMode ? '' : 'pl-2 sm:pl-8 border-l-2 border-slate-200/80 dark:border-slate-700/80'} animate-[fade-in-up_0.3s_ease-out]`}>
-                          {group.records.length === 0 ? (
+                          {group.id === 'search' && isSearchLoading ? (
+                            <div className="py-12 bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl text-center text-slate-400 dark:text-slate-500 text-xs font-mono font-bold tracking-widest">SEARCHING ALL RECORDS...</div>
+                          ) : group.records.length === 0 ? (
                             <div className="py-12 bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl text-center text-slate-400 dark:text-slate-500 text-xs font-mono font-bold tracking-widest">NO DATA FOUND</div>
                           ) : (
                             group.records.map((r) => (
@@ -694,7 +750,7 @@
                 })}
               </div>
 
-              {!isFiltering && records.length < totalRecords && (
+              {!isFiltering && !isSearching && records.length < totalRecords && (
                 <div className="pt-10 flex justify-center pb-8">
                   <button 
                     onClick={fetchMoreRecords} 
